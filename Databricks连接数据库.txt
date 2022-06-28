@@ -1,0 +1,33 @@
+Databricks 连接数据库
+
+%python
+from pyspark.sql import *
+import pandas as pd 
+
+jdbcHostname = "mdmf-sqlserver.database.chinacloudapi.cn"
+jdbcPort = "1433"
+jdbcDatabase = "mdmfconfigdb"
+password=dbutils.secrets.get(scope="kv_scope_name",key="MDMF-SQLMDMFConnection-Password")
+username="MDMF_Master"
+connectionProperties = {"user" : username, "password" : password }
+url = "jdbc:sqlserver://{0}:{1};database={2}".format(jdbcHostname,jdbcPort,jdbcDatabase) 
+
+#extract tables from db
+df=spark.read.jdbc(url, f"sys.objects",properties=connectionProperties).filter(" type='U'")
+#display(df)
+#register all tables into view for query
+table_names=df.select("name").collect()
+for table_name_row in table_names:
+    table_name=table_name_row.name 
+    spark.sql(f"DROP TABLE IF  EXISTS mdmfconfigdb.{table_name}")
+    (spark.sql(f"""CREATE TABLE IF NOT EXISTS  mdmfconfigdb.{table_name}
+                    USING org.apache.spark.sql.jdbc
+                    OPTIONS (
+                      url "{url}",
+                      dbtable "{table_name}",
+                      user "{username}",
+                      password "{password}"
+                    )  """))
+    #jdbcDF = (spark.read.jdbc(url, f"dbo.{table_name}",properties=connectionProperties)).createOrReplaceTempView(f"vw_{table_name}")
+    #print(f"mdmfconfigdb.{table_name}")
+print(f"mdmfconfigdb tables refreshed")
