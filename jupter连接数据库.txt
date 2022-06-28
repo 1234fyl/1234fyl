@@ -1,0 +1,17 @@
+jupter 连接数据库
+
+在notebook中输入pip命令安装 ipython-sql，ipython-sql，sqlalchemy 后可以进行数据库的连接 
+
+安装 ipython-sql： !pip3 install ipython-sql --user 
+
+安装pymssql ： !pip3 install pymssql  --user 
+
+安装pymssql ：!pip3 install sqlalchemy==1.3.24  --user 
+
+ 
+
+数据库连接命名 
+
+%load_ext sql 
+
+%sql mysql+pymysql://sql用户名:密码@IP/库名 
