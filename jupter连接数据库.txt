@@ -1,3 +1,4 @@
+---commit 1
 jupter 连接数据库
 
 在notebook中输入pip命令安装 ipython-sql，ipython-sql，sqlalchemy 后可以进行数据库的连接 
